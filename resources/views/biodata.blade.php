@@ -108,9 +108,9 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                     <div class="message-body">
-                                        <a href="#" class="d-flex align-items-center gap-2 dropdown-item">
-                                            <i class="ti ti-user fs-6"></i>
-                                            <p class="mb-0 fs-3">My Profile</p>
+                                        <a href="#" class="d-flex align-items-center gap-2 dropdown-item" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                            <i class="ti ti-lock fs-6"></i>
+                                            <p class="mb-0 fs-3">Ubah Password</p>
                                         </a>
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf
@@ -126,26 +126,38 @@
             <!-- Header End -->
 
             <!-- Form Biodata -->
-            <div class="container-fluid py-4">
-                <div class="row justify-content-center">
+            <div class="container-fluid d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+                <div class="row w-100 justify-content-center">
                     <div class="col-lg-8">
                         <div class="card shadow-sm">
-                            <div class="card-body" style="margin-top: 80px;">
+                            <div class="card-body">
                                 <h4 class="card-title mb-4">Form Biodata Mahasiswa</h4>
+                                @if(session('success'))
+                                  <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    {{ session('success') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                  </div>
+                                @endif
+                                @if($errors->any())
+                                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ $errors->first() }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                  </div>
+                                @endif
                                 <form action="{{ route('biodata.store') }}" method="POST">
                                     @csrf
                                     <div class="mb-3">
                                         <label for="nama" class="form-label">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama lengkap" value="{{ old('nama') }}">
+                                        <input type="text" name="nama" class="form-control" value="{{ old('nama', $biodata->nama ?? auth()->user()->name) }}" placeholder="Masukkan nama lengkap" required>
                                         @error('nama')
                                         <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="nim" class="form-label">NIM</label>
-                                        <input type="text" class="form-control" id="nim" name="nim" placeholder="Masukkan NIM" value="{{ old('nim') }}">
-                                        @error('nim')
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" name="email" class="form-control" value="{{ old('email', $biodata->email ?? auth()->user()->email) }}" placeholder="Masukkan Email" required>
+                                        @error('email')
                                         <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
@@ -154,26 +166,20 @@
                                         <label for="prodi" class="form-label">Program Studi</label>
                                         <select class="form-select" id="prodi" name="prodi">
                                             <option selected disabled>Pilih Prodi</option>
-                                            <option value="Sistem Informasi" {{ old('prodi') == 'Sistem Informasi' ? 'selected' : '' }}>Sistem Informasi</option>
-                                            <option value="Teknik Komputer" {{ old('prodi') == 'Teknik Komputer' ? 'selected' : '' }}>Teknik Komputer</option>
-                                            <option value="Matematika" {{ old('prodi') == 'Matematika' ? 'selected' : '' }}>Matematika</option>
+                                            <option value="Sistem Informasi" {{ old('prodi', $biodata->prodi ?? '') == 'Sistem Informasi' ? 'selected' : '' }}>Sistem Informasi</option>
+                                            <option value="Teknik Komputer" {{ old('prodi', $biodata->prodi ?? '') == 'Teknik Komputer' ? 'selected' : '' }}>Teknik Komputer</option>
+                                            <option value="Matematika" {{ old('prodi', $biodata->prodi ?? '') == 'Matematika' ? 'selected' : '' }}>Matematika</option>
                                         </select>
                                         @error('prodi')
                                         <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email Aktif</label>
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="example@email.com" value="{{ old('email') }}">
-                                        @error('email')
-                                        <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
+
 
                                     <div class="mb-3">
                                         <label for="nohp" class="form-label">Nomor HP</label>
-                                        <input type="text" class="form-control" id="nohp" name="nohp" placeholder="08xxxxxxxxxx" value="{{ old('nohp') }}">
+                                        <input type="text" class="form-control" id="nohp" name="nohp" placeholder="08xxxxxxxxxx" value="{{ old('nohp', $biodata->nohp ?? '') }}" required>
                                         @error('nohp')
                                         <small class="text-danger">{{ $message }}</small>
                                         @enderror
@@ -184,18 +190,92 @@
 
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
             <!-- End Form -->
-
         </div> <!-- body-wrapper -->
+
     </div> <!-- page-wrapper -->
 
     <!-- Scripts -->
     <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
     <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/app.min.js"></script>
+
+    <!-- Modal Ubah Password -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="changePasswordModalLabel">Ubah Password</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="changePasswordAlert"></div>
+            <form id="changePasswordForm" method="POST" action="{{ route('profile.password.update') }}">
+              @csrf
+              <div class="mb-3">
+                <label>Password Lama</label>
+                <input type="password" name="current_password" class="form-control" required>
+                <small class="text-danger" id="error_current_password"></small>
+              </div>
+              <div class="mb-3">
+                <label>Password Baru</label>
+                <input type="password" name="password" class="form-control" required>
+                <small class="text-danger" id="error_password"></small>
+              </div>
+              <div class="mb-3">
+                <label>Konfirmasi Password Baru</label>
+                <input type="password" name="password_confirmation" class="form-control" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Ubah Password</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+$(document).ready(function() {
+  $('#changePasswordForm').on('submit', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var url = form.attr('action');
+    var data = form.serialize();
+    // Reset alert and error
+    $('#changePasswordAlert').html('');
+    $('#error_current_password').text('');
+    $('#error_password').text('');
+    $.ajax({
+      url: url,
+      type: 'POST',
+      data: data,
+      success: function(response) {
+        $('#changePasswordAlert').html('<div class="alert alert-success">Password berhasil diubah.</div>');
+        form[0].reset();
+      },
+      error: function(xhr) {
+        if(xhr.status === 422) {
+          var errors = xhr.responseJSON.errors;
+          if(errors.current_password) {
+            $('#error_current_password').text(errors.current_password[0]);
+          }
+          if(errors.password) {
+            $('#error_password').text(errors.password[0]);
+          }
+          if(xhr.responseJSON.message) {
+            $('#changePasswordAlert').html('<div class="alert alert-danger">'+xhr.responseJSON.message+'</div>');
+          }
+        } else {
+          $('#changePasswordAlert').html('<div class="alert alert-danger">Terjadi kesalahan. Silakan coba lagi.</div>');
+        }
+      }
+    });
+  });
+});
+</script>
 </body>
 
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login :: SIAKAD ITEBA</title>
+    <title>Register :: SIAKAD ITEBA</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -77,34 +77,40 @@
                 <img src="/assets/images/logo-iteba.png" alt="ITEBA" class="login-logo mb-4" style="width: 180px;">
             </div>
         </div>
-        <!-- Right: Login Form -->
+        <!-- Right: Register Form -->
         <div class="col-lg-6 d-flex align-items-center justify-content-center bg-white">
-            <form class="login-form w-100" method="POST" action="{{ route('login') }}">
+            <form class="login-form w-100" method="POST" action="{{ route('register.post') }}">
                 @csrf
                 <div class="text-center mb-4">
                     <a href="{{ url('/') }}" class="text-decoration-none">
                         <img src="/assets/images/logo-iteba.png" alt="ITEBA" style="width: 120px; margin-bottom: 1rem;">
                     </a>
-                    <h3 class="fw-bold">Login</h3>
+                    <h3 class="fw-bold">Register</h3>
                 </div>
                 @if($errors->any())
-                    <div class="alert alert-danger">{{ $errors->first() }}</div>
-                @endif
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
                 <div class="mb-3">
-                <input type="text" name="email" class="form-control" placeholder="Email / NID" required autofocus>
+                    <input type="text" name="name" class="form-control" placeholder="Nama Lengkap" required autofocus value="{{ old('name') }}">
                 </div>
-                <div class="mb-3 position-relative">
+                <div class="mb-3">
+                    <input type="email" name="email" class="form-control" placeholder="Email" required value="{{ old('email') }}">
+                </div>
+                <div class="mb-3">
                     <input type="password" name="password" class="form-control" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Masuk</button>
+                <div class="mb-3">
+                    <input type="password" name="password_confirmation" class="form-control" placeholder="Konfirmasi Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Daftar</button>
                 <div class="login-footer">
-                    Belum punya akun? <a href="{{ route('register') }}" class="text-decoration-none">Daftar di sini</a>
+                    Sudah punya akun? <a href="{{ route('login') }}" class="text-decoration-none">Login di sini</a>
                     <br>
                     <a href="{{ url('/') }}" class="text-decoration-none text-muted">← Kembali ke Beranda</a>
                 </div>
@@ -115,4 +121,4 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html> 

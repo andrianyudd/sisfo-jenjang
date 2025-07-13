@@ -24,6 +24,13 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('admin123'), // Ini baris yang menyebabkan error jika Hash tidak diimpor
         ]);
 
+        User::create([
+            'name' => 'Admin ITEBA',
+            'email' => 'admin@iteba.ac.id',
+            'nid' => 'ITEBA001',
+            'password' => Hash::make('password123'),
+        ]);
+
         // Jika Anda memiliki seeder lain, panggil di sini:
         // $this->call([
         //     AnotherSeeder::class,

@@ -11,7 +11,10 @@ abstract class Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $login = $request->input('email');
+        $user = User::where('email', $login)
+            ->orWhere('nid', $login)
+            ->first();
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect('/');
